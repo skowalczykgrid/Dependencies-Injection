@@ -17,19 +17,20 @@ const renderUsers = async (usersService: Users) => {
   });
 };
 
-const app = () => {
-  const config = (window as any).__CONFIG__;
-  delete (window as any).__CONFIG__;
-
-  const ioc = createIoCContainer(config.api);
-
-  const logger = ioc.resolve('logger') as Logger;
-  logger.info('Page is loaded.');
-
+const app = (ioc: any) => {
   const usersService = ioc.resolve('users') as Users;
   renderUsers(usersService);
 };
 
 window.onload = (event: Event) => {
-  app();
+  const config = (window as any).__CONFIG__;
+  delete (window as any).__CONFIG__;
+
+  const ioc = createIoCContainer();
+  ioc.register('config', config.api);
+
+  const logger = ioc.resolve('logger') as Logger;
+  logger.info('Page is loaded.');
+
+  app(ioc);
 };
